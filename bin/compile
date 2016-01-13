@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# bin/compile <build-dir> <cache-dir> <env-dir>
+
+set -o errexit    # always exit on error
+set -o pipefail   # don't ignore exit codes when piping output
+set -o nounset    # fail on unset variables
+unset GIT_DIR     # Avoid GIT_DIR leak from previous build steps
+
+### Configure directories
+
+BUILD_DIR=${1:-}
+BP_DIR=$(cd $(dirname ${0:-}); cd ..; pwd)
+
+mkdir -p $BUILD_DIR/bin
+
+cp $BP_DIR/scripts/rewrite-index-meta $BUILD_DIR/bin/rewrite-index-meta
+cp $BP_DIR/scripts/set-cdn-prefix $BUILD_DIR/bin/rewrite-index-meta
+echo "-----> Copied CDN & ENV variable scripts"
+
+
+cp $BP_DIR/scripts/static.json $BUILD_DIR/static.json
+echo "-----> Copied static.json to app root"
+
+cd $BUILD_DIR
+npm install bower
+echo "-----> Installed bower for ember build"
+
+exit 0
